@@ -2,12 +2,16 @@ import './App.css'
 import {MapContainer, TileLayer} from 'react-leaflet'
 import {useContext, useEffect} from 'react'
 import LocationMarkers from './components/LocationMarkers'
+// @ts-ignore
 import {Types} from './context/HomeReducers'
+// @ts-ignore
 import {HomeContext} from './context/HomeContext'
+import {LatLng} from 'leaflet'
+import Timer from './components/Timer'
 
 function App() {
 
-  const {homeState, homeDispatch} = useContext(HomeContext)
+  const {homeState, homeDispatch}:any = useContext(HomeContext)
   const {home} = homeState
 
   useEffect(() => {
@@ -27,9 +31,9 @@ function App() {
         console.log('Fetch Error:', error)
       })
   }, [])
-  //
+
   if (home.lat === 0 && home.lng === 0) {
-    return <h1>loading...</h1>
+    return <div>Loading <Timer /></div>
   }
 
   return (
