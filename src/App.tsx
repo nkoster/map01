@@ -1,49 +1,51 @@
 import './App.css'
-import {MapContainer, TileLayer, Popup, Marker, useMapEvents} from 'react-leaflet'
-import L, {LatLng} from 'leaflet'
-import {useState} from 'react'
-
-function LocationMarkers() {
-  const initialMarkers: LatLng[] = [new LatLng(52.33150, 5.215454)]
-  const [markers, setMarkers] = useState(initialMarkers)
-
-  useMapEvents({
-    click(e) {
-      e.originalEvent.preventDefault()
-      markers.push(e.latlng)
-      setMarkers((prevValue) => [...prevValue, e.latlng])
-    }
-  })
-
-  return (
-    <>
-      {markers.map(marker => <Marker position={marker} >
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.<br/>
-          {markers.length > 1 && <button onClick={(e) => {
-            e.stopPropagation()
-            setMarkers(markers.filter(m => m !== marker))
-          }}>Remove</button>}
-        </Popup>
-      </Marker>)}
-    </>
-  )
-}
+import {MapContainer, TileLayer} from 'react-leaflet'
+import {useContext, useEffect} from 'react'
+import LocationMarkers from './components/LocationMarkers'
+import {Types} from './context/HomeReducers'
+import {HomeContext} from './context/HomeContext'
 
 function App() {
+
+  const {homeState, homeDispatch} = useContext(HomeContext)
+  const {home} = homeState
+
+  useEffect(() => {
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('almere haven')}&format=json`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('data', data[0].lat, data[0].lon)
+        navigator.geolocation.getCurrentPosition((position) => {
+          console.log('position', position.coords.latitude, position.coords.longitude)
+          homeDispatch({
+            type: Types.Update,
+            payload: new LatLng(position.coords.latitude, position.coords.longitude)
+          })
+        })
+      })
+      .catch(error => {
+        console.log('Fetch Error:', error)
+      })
+  }, [])
+  //
+  if (home.lat === 0 && home.lng === 0) {
+    return <h1>loading...</h1>
+  }
 
   return (
     <div className="App">
       <MapContainer
         style={{ height: '500px', width: '900px'}}
-        center={[52.33150, 5.215454]} zoom={15} scrollWheelZoom={true}>
+        center={[home.lat, home.lng]}
+        zoom={16}
+        scrollWheelZoom={true}
+      >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='MIL'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <LocationMarkers />
       </MapContainer>
-      {/*<button onClick={putMarker}>Click me</button>*/}
     </div>
   )
 }
