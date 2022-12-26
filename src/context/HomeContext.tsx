@@ -30,7 +30,7 @@ const HomeProvider = ({ children }: ProviderProps) => {
 
   const localHome = localStorage.getItem(`homeApp-${window.location.pathname}`)
 
-  let home: InitialStateType = initialState
+  let home: HomeType = initialState
 
   if (localHome) {
     if (localHome.length > 2) {
@@ -40,6 +40,7 @@ const HomeProvider = ({ children }: ProviderProps) => {
     }
   }
 
+  // @ts-ignore
   const [homeState, homeDispatch] = useReducer(mainReducer, home)
 
   return (
