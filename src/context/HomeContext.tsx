@@ -3,7 +3,7 @@ import {homeReducer, HomeType, HomeActions, Coord} from './HomeReducers'
 
 type InitialStateType = HomeType
 
-const initialState = {
+const initialState: HomeType = {
   home: {lat: 0, lng: 0}
 }
 
@@ -16,10 +16,10 @@ const HomeContext = createContext<{
 })
 
 const mainReducer = (
-  home: Coord,
+  home: HomeType,
   action: HomeActions
 ) => ({
-  home: homeReducer({home}, action)
+  home: homeReducer(home, action)
 })
 
 type ProviderProps = {
@@ -28,7 +28,7 @@ type ProviderProps = {
 
 const HomeProvider = ({ children }: ProviderProps) => {
 
-  // @ts-ignore
+  // -@ts-ignore
   const [homeState, homeDispatch] = useReducer(mainReducer, initialState)
 
   return (

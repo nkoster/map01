@@ -25,6 +25,7 @@ function App() {
             type: Types.Update,
             payload: new LatLng(position.coords.latitude, position.coords.longitude)
           })
+          // setTimeout(() => console.log('home', home, homeState), 1000)
         })
       })
       .catch(error => {
@@ -32,15 +33,22 @@ function App() {
       })
   }, [])
 
+  useEffect(() => {
+    console.log('home', home, homeState)
+  }, [home])
+
   if (home.lat === 0 && home.lng === 0) {
     return <div>Loading your approximate location... <Timer /></div>
   }
 
   return (
     <div className="App">
+      <div>
+
+      </div>
       <MapContainer
         style={{ height: '90vh', width: '100%', marginTop: '50px' }}
-        center={[home.lat, home.lng]}
+        center={home}
         zoom={16}
         scrollWheelZoom={true}
       >

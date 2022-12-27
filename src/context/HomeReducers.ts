@@ -33,6 +33,8 @@ export const homeReducer = (
   state: HomeType,
   action: HomeActions
 ) => {
+  console.log('action', action)
+  console.log('state', state)
   switch (action.type) {
     case Types.Update:
       return action.payload
