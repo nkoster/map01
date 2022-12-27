@@ -1,4 +1,4 @@
-import './App.css'
+// import './App.css'
 import {MapContainer, TileLayer} from 'react-leaflet'
 import {useContext, useEffect} from 'react'
 import LocationMarkers from './components/LocationMarkers'
@@ -33,13 +33,13 @@ function App() {
   }, [])
 
   if (home.lat === 0 && home.lng === 0) {
-    return <div>Loading <Timer /></div>
+    return <div>Loading your approximate location... <Timer /></div>
   }
 
   return (
     <div className="App">
       <MapContainer
-        style={{ height: '500px', width: '900px'}}
+        style={{ height: '90vh', width: '100%', marginTop: '50px' }}
         center={[home.lat, home.lng]}
         zoom={16}
         scrollWheelZoom={true}
