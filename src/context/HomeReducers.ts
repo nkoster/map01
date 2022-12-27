@@ -13,15 +13,16 @@ export enum Types {
   Update = 'UPDATE_HOME',
 }
 
+export type Coord = {
+  lat: number
+  lng: number
+}
 export type HomeType = {
-  home: { lat: number, lng: number }
+  home: Coord
 }
 
 type HomePayload = {
-  [Types.Update]: {
-    lat: number
-    lng: number
-  }
+  [Types.Update]: Coord
 }
 
 export type HomeActions = ActionMap<HomePayload>[keyof ActionMap<

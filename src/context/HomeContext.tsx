@@ -1,5 +1,5 @@
 import React, {createContext, useReducer, Dispatch} from 'react'
-import {homeReducer, HomeType, HomeActions} from './HomeReducers'
+import {homeReducer, HomeType, HomeActions, Coord} from './HomeReducers'
 
 type InitialStateType = HomeType
 
@@ -16,7 +16,7 @@ const HomeContext = createContext<{
 })
 
 const mainReducer = (
-  { home }: HomeType,
+  home: Coord,
   action: HomeActions
 ) => ({
   home: homeReducer({home}, action)
@@ -28,20 +28,8 @@ type ProviderProps = {
 
 const HomeProvider = ({ children }: ProviderProps) => {
 
-  const localHome = localStorage.getItem(`homeApp-${window.location.pathname}`)
-
-  let home: HomeType = initialState
-
-  if (localHome) {
-    if (localHome.length > 2) {
-      home = {
-        home: JSON.parse(localHome)
-      }
-    }
-  }
-
   // @ts-ignore
-  const [homeState, homeDispatch] = useReducer(mainReducer, home)
+  const [homeState, homeDispatch] = useReducer(mainReducer, initialState)
 
   return (
     <HomeContext.Provider value={{ homeState, homeDispatch }}>
