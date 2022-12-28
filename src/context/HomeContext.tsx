@@ -1,5 +1,5 @@
 import React, {createContext, useReducer, Dispatch} from 'react'
-import {homeReducer, HomeType, HomeActions, Coord} from './HomeReducers'
+import {homeReducer, HomeType, HomeActions} from './HomeReducers'
 
 type InitialStateType = HomeType
 
@@ -28,7 +28,7 @@ type ProviderProps = {
 
 const HomeProvider = ({ children }: ProviderProps) => {
 
-  // -@ts-ignore
+  // @ts-ignore
   const [homeState, homeDispatch] = useReducer(mainReducer, initialState)
 
   return (
