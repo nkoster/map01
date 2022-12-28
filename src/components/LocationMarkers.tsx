@@ -1,25 +1,33 @@
-import {LatLng} from 'leaflet'
-import {useContext, useState} from 'react'
+import {useContext, useEffect} from 'react'
 import {Marker, Polyline, Popup, useMapEvents} from 'react-leaflet'
 import {HomeContext} from '../context/HomeContext'
+import {MarkersContext} from '../context/MarkersContext'
+import {Types} from '../context/MarkersReducer'
 
 function LocationMarkers() {
 
   const {homeState} = useContext(HomeContext)
   const {home} = homeState
 
-  // if (home.lat === 0 && home.lng === 0) {
-  //   return null
-  // }
+  const {markersState, markersDispatch} = useContext(MarkersContext)
+  const {markers} = markersState
 
-  const initialMarkers: LatLng[] = [new LatLng(home.lat, home.lng)]
-  const [markers, setMarkers] = useState(initialMarkers)
+  if (home.lat === 0 && home.lng === 0) {
+    console.log('home is not set')
+  }
+
+  useEffect(() => {
+    markersDispatch({ type: Types.Update, payload: [
+      {lat: home.lat, lng: home.lng}
+    ]})
+  }, [])
 
   useMapEvents({
     click(e) {
-      // e.originalEvent.preventDefault()
-      markers.push(e.latlng)
-      setMarkers((prevValue) => [...prevValue, e.latlng])
+      e.originalEvent.preventDefault()
+      const m = [...markers]
+      m.push(e.latlng)
+      markersDispatch({type: Types.Update, payload: m})
     }
   })
 
@@ -31,7 +39,7 @@ function LocationMarkers() {
             {marker.lat}, {marker.lng}<br/>&nbsp;<br/>
             <button onClick={(e) => {
               e.stopPropagation()
-              setMarkers(markers.filter(m => m !== marker))
+              markersDispatch({type: Types.Update, payload: markers.filter(m => m !== marker)})
             }}>Remove</button>
           </Popup>
         </Marker>

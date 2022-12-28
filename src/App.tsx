@@ -6,13 +6,17 @@ import LocationMarkers from './components/LocationMarkers'
 import {Types} from './context/HomeReducers'
 // @ts-ignore
 import {HomeContext} from './context/HomeContext'
-import {LatLng} from 'leaflet'
 import Timer from './components/Timer'
+import {MarkersContext} from './context/MarkersContext'
+import {getDistanceFromLatLonListInKm} from './util'
 
 function App() {
 
   const {homeState, homeDispatch}:any = useContext(HomeContext)
   const {home} = homeState
+
+  const {markersState} = useContext(MarkersContext)
+  const {markers} = markersState
 
   useEffect(() => {
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('almere haven')}&format=json`)
@@ -23,7 +27,7 @@ function App() {
           console.log('position', position.coords.latitude, position.coords.longitude)
           homeDispatch({
             type: Types.Update,
-            payload: new LatLng(position.coords.latitude, position.coords.longitude)
+            payload: {lat: position.coords.latitude, lng: position.coords.longitude}
           })
           // setTimeout(() => console.log('home', home, homeState), 1000)
         })
@@ -44,7 +48,7 @@ function App() {
   return (
     <div className="App">
       <div>
-
+        {getDistanceFromLatLonListInKm(markers)} km
       </div>
       <MapContainer
         style={{ height: '90vh', width: '100%', marginTop: '50px' }}
