@@ -1,8 +1,9 @@
 import {useContext, useEffect} from 'react'
-import {Marker, Polygon, Polyline, Popup, useMapEvents} from 'react-leaflet'
+import {Polygon, Polyline, Popup, useMapEvents} from 'react-leaflet'
 import {HomeContext} from '../context/HomeContext'
 import {MarkersContext} from '../context/MarkersContext'
 import {MarkerTypes} from '../context/MarkersReducer'
+import DraggableMarker from './DraggableMarker'
 
 type locationMarkersProps = {
   polygon: boolean
@@ -31,13 +32,19 @@ function LocationMarkers({polygon}:locationMarkersProps) {
       const m = [...markers]
       m.push(e.latlng)
       markersDispatch({type: MarkerTypes.Update, payload: m})
+    },
+    drag(e) {
+      console.log('drag', e)
+    },
+    dragend(e) {
+      console.log('dragend', e)
     }
   })
 
   return (
     <>
       {markers.map((marker, index) => <div key={index}>
-        <Marker position={marker} riseOnHover>
+        {! polygon && <DraggableMarker index={index}>
           <Popup>
             {marker.lat}, {marker.lng}<br/>&nbsp;<br/>
             <button onClick={(e) => {
@@ -45,7 +52,7 @@ function LocationMarkers({polygon}:locationMarkersProps) {
               markersDispatch({type: MarkerTypes.Update, payload: markers.filter(m => m !== marker)})
             }}>Remove</button>
           </Popup>
-        </Marker>
+        </DraggableMarker>}
         {markers.length > 1 && polygon
           ? <Polygon positions={markers} weight={5} color={'limegreen'}/>
           : <Polyline positions={markers} weight={3}/>
