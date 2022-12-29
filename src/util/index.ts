@@ -1,3 +1,5 @@
+import {polygon, area} from '@turf/turf'
+
 export function getDistanceFromLatLonInKm(
   lat1:number, lon1:number, lat2:number, lon2:number):number {
   const R = 6371 // Radius of the earth in km
@@ -86,4 +88,30 @@ function latlontocart(latlon:{lat:number, lng:number}[]) {
 
 function ConvertToRadian(input:number):number {
   return (input * Math.PI) / 180
+}
+
+export function getPolylineArea(polyline: {lat: number, lng: number}[]): number {
+
+  const pl = [...polyline]
+  pl.push(pl[0])
+
+  // Check for invalid input
+  if (!Array.isArray(pl)) {
+    return 0;
+  }
+  if (pl.length < 3) {
+    return 0;
+  }
+
+  // Convert the input polyline to a list of latitude and longitude coordinates
+  var coordinates: number[][] = pl.map(function(point) {
+    return [point.lng, point.lat];
+  });
+
+  // Use the Turf.js library to calculate the area of the polygon formed by the polyline
+  var p = polygon([coordinates]);
+  var a = area(p);
+
+  // Convert the area from square meters to square kilometers
+  return a / 1e6;
 }

@@ -8,7 +8,7 @@ import {HomeTypes} from './context/HomeReducers'
 import {HomeContext} from './context/HomeContext'
 import Timer from './components/Timer'
 import {MarkersContext} from './context/MarkersContext'
-import {getArea, getDistanceFromLatLonListInKm} from './util'
+import {getDistanceFromLatLonListInKm, getPolylineArea} from './util'
 import {MarkerTypes} from './context/MarkersReducer'
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
 
   const distance = getDistanceFromLatLonListInKm(markers)
 
-  const area = markers.length > 2 ? getArea(markers) : 0
+  const area = markers.length > 2 ? getPolylineArea(markers) : 0
 
   return (
     <div className="App">
