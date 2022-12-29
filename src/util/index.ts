@@ -39,57 +39,6 @@ export function getDistanceFromLatLonListInKm(
 
 }
 
-// deze functie berekent de oppervlakte van een polygon die bestaat uit lat, lng coords
-// de functie is gebaseerd op de volgende bron:
-// https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
-//
-
-export function getAreaFromLatLngListInKm(
-  coords: {lat:number, lng:number}[]
-): number {
-  const p = [...coords]
-  // p.push(coords[0])
-  const area = p.reduce(
-    (acc, curr, i, arr) => acc +
-      (curr.lat * arr[(i + 1) % arr.length].lng - arr[(i + 1) % arr.length].lat * curr.lng),
-    0) / 2 * 1000000
-  console.log('area', area)
-  return Math.abs(area)
-}
-
-// Based on the following source:
-// https://stackoverflow.com/questions/33785129/how-to-calculate-an-area-based-on-the-set-of-latitude-and-longitude-values-using
-export function getArea(polygon:{lat:number, lng:number}[]) {
-  const p = latlontocart(polygon)
-  const length = p.length
-  let sum = 0
-  for (let i = 0; i < length; i += 2) {
-    sum +=
-      p[i] * p[(i + 3) % length] -
-      p[i + 1] * p[(i + 2) % length]
-  }
-  return Math.abs(sum * 0.5 / 1000000)
-}
-
-function latlontocart(latlon:{lat:number, lng:number}[]) {
-  let latAnchor = latlon[0].lat
-  let lonAnchor = latlon[0].lng
-  let R = 6378137 //radius of earth
-  let pos = []
-  for (let i = 0; i < latlon.length; i++) {
-    let xPos =
-      (latlon[i].lng - lonAnchor) * ConvertToRadian(R) * Math.cos(latAnchor)
-    let yPos = (latlon[i].lat - latAnchor) * ConvertToRadian(R)
-
-    pos.push(xPos, yPos)
-  }
-  return pos
-}
-
-function ConvertToRadian(input:number):number {
-  return (input * Math.PI) / 180
-}
-
 export function getPolylineArea(polyline: {lat: number, lng: number}[]): number {
 
   const pl = [...polyline]
@@ -97,21 +46,15 @@ export function getPolylineArea(polyline: {lat: number, lng: number}[]): number 
 
   // Check for invalid input
   if (!Array.isArray(pl)) {
-    return 0;
+    return 0
   }
   if (pl.length < 3) {
-    return 0;
+    return 0
   }
 
-  // Convert the input polyline to a list of latitude and longitude coordinates
-  var coordinates: number[][] = pl.map(function(point) {
-    return [point.lng, point.lat];
-  });
+  const coordinates: number[][] = pl.map(function(point) {
+    return [point.lng, point.lat]
+  })
 
-  // Use the Turf.js library to calculate the area of the polygon formed by the polyline
-  var p = polygon([coordinates]);
-  var a = area(p);
-
-  // Convert the area from square meters to square kilometers
-  return a / 1e6;
+  return area(polygon([coordinates])) / 1e6
 }

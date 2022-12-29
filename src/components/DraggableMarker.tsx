@@ -19,10 +19,8 @@ function DraggableMarker({index, children}:DraggableMarkerProps) {
       const marker = markerRef.current
       if (marker != null) {
         const m = [...markersState.markers]
-        console.log('dragend 1', m, index)
         // @ts-ignore
         m[index] = marker.getLatLng()
-        console.log('dragend 2', m, index)
         markersDispatch({type: MarkerTypes.Update, payload: [...m]})
       }
     }

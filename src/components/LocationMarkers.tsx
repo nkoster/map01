@@ -32,12 +32,6 @@ function LocationMarkers({polygon}:locationMarkersProps) {
       const m = [...markers]
       m.push(e.latlng)
       markersDispatch({type: MarkerTypes.Update, payload: m})
-    },
-    drag(e) {
-      console.log('drag', e)
-    },
-    dragend(e) {
-      console.log('dragend', e)
     }
   })
 
