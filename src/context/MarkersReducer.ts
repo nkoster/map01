@@ -9,7 +9,7 @@ type ActionMap<M extends { [index: string]: any }> = {
     }
 }
 
-export enum Types {
+export enum MarkerTypes {
   Update = 'UPDATE_MARKERS',
 }
 
@@ -19,7 +19,7 @@ export type MarkerType = {
 }
 
 type StatePayload = {
-  [Types.Update]: MarkerType[]
+  [MarkerTypes.Update]: MarkerType[]
 }
 
 export type StateActions = ActionMap<StatePayload>[keyof ActionMap<
@@ -31,7 +31,7 @@ export const markersReducer = (
   action: StateActions
 ) => {
   switch (action.type) {
-    case Types.Update:
+    case MarkerTypes.Update:
       return [...action.payload]
     default:
       return state
