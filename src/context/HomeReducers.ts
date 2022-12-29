@@ -9,7 +9,7 @@ type ActionMap<M extends { [index: string]: any }> = {
     }
 }
 
-export enum Types {
+export enum HomeTypes {
   Update = 'UPDATE_HOME',
 }
 
@@ -22,7 +22,7 @@ export type HomeType = {
 }
 
 type HomePayload = {
-  [Types.Update]: Coord
+  [HomeTypes.Update]: Coord
 }
 
 export type HomeActions = ActionMap<HomePayload>[keyof ActionMap<
@@ -36,7 +36,7 @@ export const homeReducer = (
   console.log('action', action)
   console.log('state', state)
   switch (action.type) {
-    case Types.Update:
+    case HomeTypes.Update:
       return action.payload
     default:
       return state

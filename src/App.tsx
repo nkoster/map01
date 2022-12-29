@@ -1,22 +1,25 @@
-// import './App.css'
+import './App.css'
 import {MapContainer, TileLayer} from 'react-leaflet'
-import {useContext, useEffect} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import LocationMarkers from './components/LocationMarkers'
 // @ts-ignore
-import {Types} from './context/HomeReducers'
+import {HomeTypes} from './context/HomeReducers'
 // @ts-ignore
 import {HomeContext} from './context/HomeContext'
 import Timer from './components/Timer'
 import {MarkersContext} from './context/MarkersContext'
-import {getDistanceFromLatLonListInKm} from './util'
+import {getArea, getDistanceFromLatLonListInKm} from './util'
+import {MarkerTypes} from './context/MarkersReducer'
 
 function App() {
 
   const {homeState, homeDispatch}:any = useContext(HomeContext)
   const {home} = homeState
 
-  const {markersState} = useContext(MarkersContext)
+  const {markersState, markersDispatch} = useContext(MarkersContext)
   const {markers} = markersState
+
+  const [polygon, setPolygon] = useState<any>(false)
 
   useEffect(() => {
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('almere haven')}&format=json`)
@@ -26,7 +29,7 @@ function App() {
         navigator.geolocation.getCurrentPosition((position) => {
           console.log('position', position.coords.latitude, position.coords.longitude)
           homeDispatch({
-            type: Types.Update,
+            type: HomeTypes.Update,
             payload: {lat: position.coords.latitude, lng: position.coords.longitude}
           })
           // setTimeout(() => console.log('home', home, homeState), 1000)
@@ -45,23 +48,35 @@ function App() {
     return <div>Loading your approximate location... <Timer /></div>
   }
 
+  const distance = getDistanceFromLatLonListInKm(markers)
+
+  const area = markers.length > 2 ? getArea(markers) : 0
+
   return (
     <div className="App">
-      <div>
-        {getDistanceFromLatLonListInKm(markers)} km
-      </div>
-      <MapContainer
-        style={{ height: '90vh', width: '100%', marginTop: '50px' }}
-        center={home}
-        zoom={16}
-        scrollWheelZoom={true}
-      >
-        <TileLayer
-          attribution='MIL'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <LocationMarkers />
-      </MapContainer>
+      <header>
+        {markers.length} marker{markers.length != 1 ? 's' : ''} &nbsp; &nbsp;
+        total distance {distance.toFixed(4)} km /&nbsp;
+        {(distance * 0.621371).toFixed(4)} mi &nbsp; &nbsp;
+        area {area.toFixed(4)} km<sup>2</sup> /&nbsp;
+        {(area * 0.386102).toFixed(4)} mi<sup>2</sup> &nbsp; &nbsp; &nbsp;
+        <button onClick={() => markersDispatch({type: MarkerTypes.Update, payload: []})}>Reset</button> &nbsp;
+        <button onClick={() => setPolygon(!polygon)}>{polygon ? 'polyline' : 'polygon'}</button>
+      </header>
+      <main style={{paddingTop:'2rem'}}>
+        <MapContainer
+          style={{ height: 'calc(100vh - 4rem)', width: '100%', cursor: 'crosshair' }}
+          center={home}
+          zoom={16}
+          scrollWheelZoom={true}
+        >
+          <TileLayer
+            attribution='MIL'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <LocationMarkers polygon={polygon}/>
+        </MapContainer>
+      </main>
     </div>
   )
 }

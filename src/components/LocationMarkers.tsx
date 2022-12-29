@@ -1,10 +1,13 @@
 import {useContext, useEffect} from 'react'
-import {Marker, Polyline, Popup, useMapEvents} from 'react-leaflet'
+import {Marker, Polygon, Polyline, Popup, useMapEvents} from 'react-leaflet'
 import {HomeContext} from '../context/HomeContext'
 import {MarkersContext} from '../context/MarkersContext'
-import {Types} from '../context/MarkersReducer'
+import {MarkerTypes} from '../context/MarkersReducer'
 
-function LocationMarkers() {
+type locationMarkersProps = {
+  polygon: boolean
+}
+function LocationMarkers({polygon}:locationMarkersProps) {
 
   const {homeState} = useContext(HomeContext)
   const {home} = homeState
@@ -17,7 +20,7 @@ function LocationMarkers() {
   }
 
   useEffect(() => {
-    markersDispatch({ type: Types.Update, payload: [
+    markersDispatch({ type: MarkerTypes.Update, payload: [
       {lat: home.lat, lng: home.lng}
     ]})
   }, [])
@@ -27,7 +30,7 @@ function LocationMarkers() {
       e.originalEvent.preventDefault()
       const m = [...markers]
       m.push(e.latlng)
-      markersDispatch({type: Types.Update, payload: m})
+      markersDispatch({type: MarkerTypes.Update, payload: m})
     }
   })
 
@@ -39,11 +42,14 @@ function LocationMarkers() {
             {marker.lat}, {marker.lng}<br/>&nbsp;<br/>
             <button onClick={(e) => {
               e.stopPropagation()
-              markersDispatch({type: Types.Update, payload: markers.filter(m => m !== marker)})
+              markersDispatch({type: MarkerTypes.Update, payload: markers.filter(m => m !== marker)})
             }}>Remove</button>
           </Popup>
         </Marker>
-        {markers.length > 1 && <Polyline positions={markers} />}
+        {markers.length > 1 && polygon
+          ? <Polygon positions={markers} weight={5} color={'limegreen'}/>
+          : <Polyline positions={markers} weight={3}/>
+        }
       </div>)}
     </>
   )
