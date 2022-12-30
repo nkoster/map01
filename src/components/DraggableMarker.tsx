@@ -2,6 +2,7 @@ import {useContext, useRef} from 'react'
 import {Marker} from 'react-leaflet'
 import {MarkersContext} from '../context/MarkersContext'
 import {MarkerTypes} from '../context/MarkersReducer'
+import {MarkerIcon} from '../util'
 
 type DraggableMarkerProps = {
   index: number
@@ -30,6 +31,7 @@ function DraggableMarker({index, children}:DraggableMarkerProps) {
     <Marker
       draggable={true}
       eventHandlers={eventHandlers}
+      icon={MarkerIcon}
       position={markersState.markers[index]}
       ref={markerRef}>
       {children}

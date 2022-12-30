@@ -1,4 +1,5 @@
 import {polygon, area} from '@turf/turf'
+import {Icon, Point} from 'leaflet'
 
 export function getDistanceFromLatLonInKm(
   lat1:number, lon1:number, lat2:number, lon2:number):number {
@@ -44,10 +45,6 @@ export function getPolylineArea(polyline: {lat: number, lng: number}[]): number 
   const pl = [...polyline]
   pl.push(pl[0])
 
-  // Check for invalid input
-  if (!Array.isArray(pl)) {
-    return 0
-  }
   if (pl.length < 3) {
     return 0
   }
@@ -56,5 +53,19 @@ export function getPolylineArea(polyline: {lat: number, lng: number}[]): number 
     return [point.lng, point.lat]
   })
 
-  return area(polygon([coordinates])) / 1e6
+  // area in square meters returned in km^2
+  return Math.abs(area(polygon([coordinates])) / 1e6)
 }
+const MarkerIcon = new Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+  iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+  iconAnchor: new Point(10, 30),
+  // popupAnchor: null,
+  // shadowUrl: null,
+  // shadowSize: null,
+  // shadowAnchor: null,
+  iconSize: new Point(20, 30),
+  // className: 'leaflet-div-icon'
+})
+
+export { MarkerIcon }
