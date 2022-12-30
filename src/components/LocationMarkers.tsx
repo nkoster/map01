@@ -21,9 +21,9 @@ function LocationMarkers({polygon}:locationMarkersProps) {
   }
 
   useEffect(() => {
-    markersDispatch({ type: MarkerTypes.Update, payload: [
-      {lat: home.lat, lng: home.lng}
-    ]})
+    markersDispatch({
+      type: MarkerTypes.Update,
+      payload: [{lat: home.lat, lng: home.lng}]})
   }, [])
 
   useMapEvents({
@@ -48,8 +48,8 @@ function LocationMarkers({polygon}:locationMarkersProps) {
           </Popup>
         </DraggableMarker>}
         {markers.length > 1 && polygon
-          ? <Polygon positions={markers} weight={5} color={'limegreen'}/>
-          : <Polyline positions={markers} weight={3}/>
+          ? <Polygon positions={markers} weight={4} color={'blueviolet'} opacity={.2}/>
+          : <Polyline positions={markers} weight={3} color={'blueviolet'}/>
         }
       </div>)}
     </>
