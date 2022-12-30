@@ -22,22 +22,29 @@ function App() {
   const [polygon, setPolygon] = useState<any>(false)
 
   useEffect(() => {
-    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('almere haven')}&format=json`)
-      .then(response => response.json())
-      .then(data => {
-        console.log('data', data[0].lat, data[0].lon)
-        navigator.geolocation.getCurrentPosition((position) => {
-          console.log('position', position.coords.latitude, position.coords.longitude)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        homeDispatch({type: HomeTypes.Update, payload: {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        }})
+      })
+    } else {
+      fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent('almere haven')}&format=json`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('data', data[0].lat, data[0].lon)
           homeDispatch({
-            type: HomeTypes.Update,
-            payload: {lat: position.coords.latitude, lng: position.coords.longitude}
+            type: HomeTypes.Update, payload: {
+              lat: data[0].lat,
+              lng: data[0].lon
+            }
           })
-          // setTimeout(() => console.log('home', home, homeState), 1000)
         })
-      })
-      .catch(error => {
-        console.log('Fetch Error:', error)
-      })
+        .catch(error => {
+          console.log('Fetch Error: ', error)
+        })
+    }
   }, [])
 
   useEffect(() => {
@@ -59,9 +66,16 @@ function App() {
         total distance {distance.toFixed(4)} km /&nbsp;
         {(distance * 0.621371).toFixed(4)} mi &nbsp; &nbsp;
         area {area.toFixed(4)} km<sup>2</sup> /&nbsp;
-        {(area * 0.386102).toFixed(4)} mi<sup>2</sup> &nbsp; &nbsp; &nbsp;
-        <button onClick={() => markersDispatch({type: MarkerTypes.Update, payload: []})}>Reset</button> &nbsp;
-        <button onClick={() => setPolygon(!polygon)}>{polygon ? 'polyline' : 'polygon'}</button>
+        {(area / 2.589988110336).toFixed(4)} mi<sup>2</sup> &nbsp; &nbsp; &nbsp;
+        <button
+          disabled={markers.length < 3}
+          onClick={() => setPolygon(!polygon)}
+        >{polygon ? 'markers' : 'polygon'}</button> &nbsp;
+        <button
+          disabled={markers.length == 0 || polygon}
+          onClick={() => confirm('You are about to remove ALL current markers from the map.\n\nAre you sure?')
+            && markersDispatch({type: MarkerTypes.Update, payload: []})}
+        >Reset</button>
       </header>
       <main style={{paddingTop:'2rem'}}>
         <MapContainer
@@ -71,7 +85,7 @@ function App() {
           scrollWheelZoom={true}
         >
           <TileLayer
-            attribution='MIL'
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | w3b dot net'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <LocationMarkers polygon={polygon}/>
