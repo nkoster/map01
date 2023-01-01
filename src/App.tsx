@@ -100,12 +100,11 @@ function App() {
             // attribution = 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
           />
           <TileLayer
-            opacity={satellite ? 0.5 : 1}
+            opacity={satellite ? 0.2 : 1}
             url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             attribution = '&copy; OpenStreetMap | &copy Esri'
           />
-          {/*</LayersControl>*/}
-          <LocationMarkers polygon={polygon}/>
+          <LocationMarkers polygon={polygon} satellite={satellite}/>
         </MapContainer>
         <div className={'buttonBox'}>
           <button

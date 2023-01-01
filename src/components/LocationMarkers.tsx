@@ -7,8 +7,9 @@ import DraggableMarker from './DraggableMarker'
 
 type locationMarkersProps = {
   polygon: boolean
+  satellite: boolean
 }
-function LocationMarkers({polygon}:locationMarkersProps) {
+function LocationMarkers({polygon, satellite}:locationMarkersProps) {
 
   const {homeState} = useContext(HomeContext)
   const {home} = homeState
@@ -29,7 +30,7 @@ function LocationMarkers({polygon}:locationMarkersProps) {
   useMapEvents({
     click(e) {
       // @ts-ignore
-      if (e.originalEvent.explicitOriginalTarget instanceof SVGPathElement) {
+      if (e.originalEvent.target instanceof SVGPathElement) {
         console.log('click on path')
         return
       }
@@ -52,13 +53,15 @@ function LocationMarkers({polygon}:locationMarkersProps) {
           </Popup>
         </DraggableMarker>}
         {markers.length > 1 && polygon
-          ? <Polygon positions={markers} weight={4} color={'olive'} opacity={1}/>
-          : <Polyline positions={markers} weight={3} color={'olive'} eventHandlers={
+          ? <Polygon positions={markers} weight={4} color={satellite ? 'yellow' : 'olive'} fillOpacity={.1}/>
+          : <Polyline positions={markers} weight={3} color={satellite ? 'yellow' : 'olive'} eventHandlers={
             {
               click: (e) => {
                 // @ts-ignore
                 const currentColor = e.originalEvent.target.attributes['stroke'].value
-                e.target.setStyle({color: currentColor == 'red' ? 'olive' : 'red'})
+                console.log('currentColor', currentColor)
+                const selectColor = 'red'
+                e.target.setStyle({color: currentColor == selectColor ? satellite ? 'yellow' : 'olive' : selectColor})
               }
             }
           }/>
