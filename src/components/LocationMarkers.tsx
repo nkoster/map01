@@ -28,7 +28,11 @@ function LocationMarkers({polygon}:locationMarkersProps) {
 
   useMapEvents({
     click(e) {
-      e.originalEvent.preventDefault()
+      // @ts-ignore
+      if (e.originalEvent.explicitOriginalTarget instanceof SVGPathElement) {
+        console.log('click on path')
+        return
+      }
       const m = [...markers]
       m.push(e.latlng)
       markersDispatch({type: MarkerTypes.Update, payload: m})
@@ -48,8 +52,16 @@ function LocationMarkers({polygon}:locationMarkersProps) {
           </Popup>
         </DraggableMarker>}
         {markers.length > 1 && polygon
-          ? <Polygon positions={markers} weight={4} color={'blueviolet'} opacity={.2}/>
-          : <Polyline positions={markers} weight={3} color={'blueviolet'}/>
+          ? <Polygon positions={markers} weight={4} color={'olive'} opacity={1}/>
+          : <Polyline positions={markers} weight={3} color={'olive'} eventHandlers={
+            {
+              click: (e) => {
+                // @ts-ignore
+                const currentColor = e.originalEvent.target.attributes['stroke'].value
+                e.target.setStyle({color: currentColor == 'red' ? 'olive' : 'red'})
+              }
+            }
+          }/>
         }
       </div>)}
     </>
