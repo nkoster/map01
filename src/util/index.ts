@@ -40,6 +40,32 @@ export function getDistanceFromLatLonListInKm(
 
 }
 
+export function getPolygonDistanceFromLatLonListInKm(
+  coords: {lat:number, lng:number}[]
+): number {
+
+  const c = [...coords]
+
+  if (c.length < 2) {
+    return 0
+  }
+
+  c.push(coords[0])
+
+  return c.reduce((acc, coord, index, arr) => {
+    if (index === 0) {
+      return 0
+    }
+    return acc + getDistanceFromLatLonInKm(
+      arr[index-1].lat,
+      arr[index-1].lng,
+      coord.lat,
+      coord.lng
+    )
+  }, 0)
+
+}
+
 export function getPolylineArea(polyline: {lat: number, lng: number}[]): number {
 
   const pl = [...polyline]
