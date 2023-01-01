@@ -15,15 +15,26 @@ function DraggableMarker({index, children}:DraggableMarkerProps) {
 
   const markerRef = useRef(null)
 
+  const updateMarkers = () => {
+    const marker = markerRef.current
+    if (marker != null) {
+      const m = [...markersState.markers]
+      // @ts-ignore
+      m[index] = marker.getLatLng()
+      markersDispatch({type: MarkerTypes.Update, payload: [...m]})
+    }
+  }
+
   const eventHandlers = {
-    dragend() {
-      const marker = markerRef.current
-      if (marker != null) {
-        const m = [...markersState.markers]
+    drag() {
+      if (markerRef.current != null) {
+        updateMarkers()
         // @ts-ignore
-        m[index] = marker.getLatLng()
-        markersDispatch({type: MarkerTypes.Update, payload: [...m]})
+        console.log('markerRef', markerRef.current._leaflet_id)
       }
+    },
+    dragend() {
+      updateMarkers()
     }
   }
 
